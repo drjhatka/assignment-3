@@ -49,7 +49,7 @@ const userSchema = new Schema<TUser>({
 userSchema.pre('save',async function(next){
     const doc = this;
     doc.password= await bcrypt.hash(doc.password,10);
-    console.log(doc.password)
+    console.log('hashed Pass - ',doc.password)
     next();
 })
 

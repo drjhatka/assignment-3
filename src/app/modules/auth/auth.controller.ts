@@ -23,21 +23,21 @@ const loginUser = catchAsync(async (req, res) => {
         return
     }
     // Check if the user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('password');
     if (!user) {
         sendResponse(res, { success: false, statusCode: httpStatus.NOT_FOUND, message: 'User not found', data: {} })
         return
     }
     // Compare passwords
-    const isMatch = await bcrypt.compare(password, config.jwt_secret as string);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
         sendResponse(res, { success: false, statusCode: httpStatus.UNAUTHORIZED, message: "'Invalid password'", data: {} })
         return
     }
-
+    
       // Generate JWT token
     const token = jwt.sign(
-        { id: user._id, email: user.email },
+        {  email: user.email },
         config.jwt_secret as string, 
         { expiresIn: '10h' } // token expires in 1 hour
     );
