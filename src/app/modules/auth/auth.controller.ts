@@ -24,7 +24,6 @@ const loginUser = catchAsync(async (req, res) => {
         return
     }
     const result = await AuthService.loginUser(req.body)
-    console.log(result)
     sendResponse(res, {success:true, statusCode:httpStatus.OK, message:"Login Success",data:result})
 })
 export const AuthController = {

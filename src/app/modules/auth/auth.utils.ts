@@ -26,10 +26,6 @@ export const checkLoginCredentials = async (user: TUser, payload: TLoginUser) =>
     }
 }
 
-// export const issueJWTToken = (jwtPayload:JWTTokenPayload)=>{
-//     const accessToken = 
-// }
-
 export const createJWTToken = async (jwtPayload:JWTTokenPayload, config:string, expiresIn:string)=>{
-    return await jwt.sign(jwtPayload, config, {expiresIn:expiresIn} )
+    return jwt.sign(jwtPayload, config, {expiresIn:expiresIn} )
 }
