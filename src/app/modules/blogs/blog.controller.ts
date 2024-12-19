@@ -1,5 +1,4 @@
 import { catchAsync } from "../../utils/catchAsync";
-import { TBlog } from "./blog.interface";
 import { BlogService } from "./blog.service";
 
 
@@ -11,7 +10,9 @@ const getSingleBlog =catchAsync(async(req, res, next)=>{
 
 })
 const createBlog=catchAsync(async(req, res, next)=>{
-    //associate current logged in user with the blog being created
+    //check user credentials...
+    
+    
 
     const blog = BlogService.createBlogIntoDB(req.body)
 })
