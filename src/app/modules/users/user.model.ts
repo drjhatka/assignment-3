@@ -46,11 +46,11 @@ const userSchema = new Schema<TUser>({
     { timestamps: true }
 )
 
-// userSchema.pre('save',async function(next){
-//     const doc = this;
-//     doc.password= await bcrypt.hash(doc.password,10);
-//     console.log(doc.password)
-//     next();
-// })
+userSchema.pre('save',async function(next){
+    const doc = this;
+    doc.password= await bcrypt.hash(doc.password,10);
+    console.log(doc.password)
+    next();
+})
 
 export const User = model<TUser>('User', userSchema) //create model from schema and export

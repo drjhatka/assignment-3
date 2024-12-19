@@ -1,4 +1,4 @@
-import { NextFunction, Response, Request } from "express";
+import {Response } from "express";
 
 export type TResponse<T> ={
     statusCode:number,
