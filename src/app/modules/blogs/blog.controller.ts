@@ -11,8 +11,8 @@ const getSingleBlog =catchAsync(async(req, res, next)=>{
 
 })
 const createBlog=catchAsync(async(req, res, next)=>{
-    //generate user first
-    
+    //associate current logged in user with the blog being created
+
     const blog = BlogService.createBlogIntoDB(req.body)
 })
 
