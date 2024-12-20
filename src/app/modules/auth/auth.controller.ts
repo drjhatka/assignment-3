@@ -1,13 +1,8 @@
-import { error } from "console";
 import { catchAsync } from "../../utils/catchAsync"
 import { sendResponse } from "../../utils/sendResponse"
-import { TUser } from "../users/user.interface";
 import { UserService } from "../users/user.service"
 import httpStatus from 'http-status';
-import { User } from "../users/user.model";
-import bcrypt from 'bcrypt';
-import { config } from "../../config";
-import jwt from 'jsonwebtoken'
+
 import { AuthService } from "./auth.service";
 const createUser = catchAsync(async (req, res) => {
     //data has come clean... now transfer to service

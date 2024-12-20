@@ -8,19 +8,20 @@ import jwt from 'jsonwebtoken';
 import { config } from "../../config";
 
 const createUserIntoDB = () => {
-
+    
 }
 
 const loginUser = async (payload: TUser) => {
     // Check if the user exists
-        const user = await User.findOne({ email:payload.email }).select(['password','email', 'role'] );
+    const user = await User.findOne({ email:payload.email }).select(['password','email', 'role'] );
 
     //check if the user exists, password match, status is active and user is not deleted
-        checkLoginCredentials(user as TUser, payload);
+    checkLoginCredentials(user as TUser, payload);
 
     //all good, now proceed to issuing a jwt token to the user
-        return await createJWTToken({email:user?.email as string, role:user?.role as string},config.jwt_secret as string,'1h');
-    }
+    const accessToken = await createJWTToken({email:user?.email as string, role:user?.role as string},config.jwt_secret as string,'1h');
+    return accessToken;
+}
 
 export const AuthService = {
     createUserIntoDB,
