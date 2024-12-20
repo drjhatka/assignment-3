@@ -4,12 +4,13 @@ import { MongooseError } from "mongoose";
 import { ZodError } from "zod";
 import { sendResponse } from "../utils/sendResponse";
 import status from "http-status";
+import { sendErrorResponse } from "../utils/sendErrorResponse";
 
 
 
 export const GlobalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ZodError) {
-        sendResponse(res, {statusCode: status.BAD_REQUEST , message:err.name, data:err,success:false })
+        sendErrorResponse(res, {statusCode: status.BAD_REQUEST , message:err.name, error:err.issues,success:false, stack:err.stack as string })
     }
     else if (err instanceof MongooseError) {
         if (err.name === "CastError") {

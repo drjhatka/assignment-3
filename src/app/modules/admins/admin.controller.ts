@@ -1,7 +1,7 @@
 import { catchAsync } from "../../utils/catchAsync"
 
 const blockUser=catchAsync((req, res)=>{
-    userId = req.params
+   // userId = req.params
 })
 
 const deleteBlog=()=>{}

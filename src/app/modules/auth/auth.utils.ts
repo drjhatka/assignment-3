@@ -5,6 +5,8 @@ import httpStatus from 'http-status';
 import { config } from '../../config/index';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { User } from "../users/user.model";
+import { ObjectId } from "mongoose";
 
 export type JWTTokenPayload = {
     email:string
@@ -28,4 +30,10 @@ export const checkLoginCredentials = async (user: TUser, payload: TLoginUser) =>
 
 export const createJWTToken = async (jwtPayload:JWTTokenPayload, config:string, expiresIn:string)=>{
     return jwt.sign(jwtPayload, config, {expiresIn:expiresIn} )
+}
+
+export const sanitizePostSaveData=async (userId:string,fields:string[])=>{
+    //find the user by id
+    const user = await User.findById(userId).select(fields)
+    return user;
 }

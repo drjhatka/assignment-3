@@ -19,17 +19,10 @@ const userSchema = new Schema<TUser>({
         required: true,
         select:false
     },
-    phone: {
-        type: String,
-        required: true,
-    },
-    address: {
-        type: String,
-        required: true,
-    },
     role: {
         type: String,
-        enum: userEnums.UserRolesArray
+        enum: userEnums.UserRolesArray,
+        default:'user'
     },
     status: {
         type: String,

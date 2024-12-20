@@ -6,7 +6,6 @@ import httpStatus from 'http-status';
 
 const createUser=catchAsync((req, res, next)=>{
     const user = UserService.createUserIntoDB(req.body)
-    //sanitize data before sending to client...
     sendResponse(res, {success:true, statusCode:httpStatus.CREATED, data:user})
 })
 
