@@ -4,7 +4,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { BlogService } from "./blog.service";
 import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { JWTTokenPayload, sanitizePostBlogData, sanitizePostSaveData } from '../auth/auth.utils';
+import { JWTTokenPayload, sanitizePostBlogData } from '../auth/auth.utils';
 import { retrieveUserCredentialsFromToken } from "./blog.utils";
 import { User } from "../users/user.model";
 import { TBlog } from "./blog.interface";
@@ -14,8 +14,10 @@ import Blog from "./blog.model";
 // @ts-ignore: Object is possibly 'null'.
 
 const getAllBlogs = catchAsync(async (req, res, next) => {
-    const result = await BlogService.get
-    //sendResponse(res,{success:true, statusCode:httpStatus.OK, message:'test',data:req.query})
+   // console.log(req.query)
+    const result = await BlogService.getAllBlogs(req.query)
+    //const sanitizedBlog = sanitizePostBlogData(result.every(elem=>{}),[''])
+    sendResponse(res,{success:true, statusCode:httpStatus.OK, message:'Blog Fetched successfully',data:result})
 
 })
 const getSingleBlog = catchAsync(async (req, res, next) => {
