@@ -14,7 +14,8 @@ import Blog from "./blog.model";
 // @ts-ignore: Object is possibly 'null'.
 
 const getAllBlogs = catchAsync(async (req, res, next) => {
-    res.send({ message: 'test' })
+    const result = await BlogService.get
+    //sendResponse(res,{success:true, statusCode:httpStatus.OK, message:'test',data:req.query})
 
 })
 const getSingleBlog = catchAsync(async (req, res, next) => {

@@ -2,6 +2,10 @@ import { TBlog } from "./blog.interface";
 import Blog from "./blog.model";
 import { ObjectId } from 'mongodb';
 
+const getAllBlogs = async(query:Record<string,unknown>)=>{
+    return await Blog.find()
+
+}
 const createBlogIntoDB = async (payload: TBlog) => {
     //assign current logged in user id to blog author field id...
     return (await Blog.create(payload)).populate('author')
@@ -16,6 +20,7 @@ const deleteBlog = async (id: string)=>{
 }
 
 export const BlogService = {
+    getAllBlogs,
     createBlogIntoDB,
     updateBlog,
     deleteBlog
