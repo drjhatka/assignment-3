@@ -1,7 +1,14 @@
+import { sendErrorResponse } from "../../utils/sendErrorResponse";
 import { TBlog } from "./blog.interface";
 import Blog from "./blog.model";
 import { ObjectId } from 'mongodb';
+import httpStatus from 'http-status';
 
+const getSingleBlog = async (id:string)=>{
+    const result = await Blog.findById(id)
+    console.log(result)
+    return result
+}
 const getAllBlogs = async (query: Record<string, unknown>) => {
     //console.log(query)
     let search = ''
@@ -65,6 +72,7 @@ const deleteBlog = async (id: string) => {
 }
 
 export const BlogService = {
+    getSingleBlog,
     getAllBlogs,
     createBlogIntoDB,
     updateBlog,

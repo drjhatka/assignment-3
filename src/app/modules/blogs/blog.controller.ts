@@ -21,7 +21,12 @@ const getAllBlogs = catchAsync(async (req, res, next) => {
 
 })
 const getSingleBlog = catchAsync(async (req, res, next) => {
-
+    const id = req.params.id;
+    const blog = await BlogService.getSingleBlog(id)
+    if(!blog){
+        sendResponse(res,{success:true, message:"Blog not Found", statusCode:httpStatus.NOT_FOUND, data:{}})
+    }
+    sendResponse(res,{success:true, message:"Blog fetched successfully", statusCode:httpStatus.OK, data:blog})
 })
 const createBlog = catchAsync(async (req, res, next) => {
     //retrieve user email and role from jwt header as an array...
