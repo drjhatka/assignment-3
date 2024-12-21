@@ -4,7 +4,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { BlogService } from "./blog.service";
 import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { JWTTokenPayload } from '../auth/auth.utils';
+import { JWTTokenPayload, sanitizePostBlogData, sanitizePostSaveData } from '../auth/auth.utils';
 import { retrieveUserCredentialsFromToken } from "./blog.utils";
 import { User } from "../users/user.model";
 import { TBlog } from "./blog.interface";
@@ -24,7 +24,7 @@ const createBlog=catchAsync(async(req, res, next)=>{
         const decoded = retrieveUserCredentialsFromToken(req.headers.authorization as string, config.jwt_secret as string)
     //find user in the database with the email provided....
         const user = await User.findOne({email:decoded.email}) 
-        console.log(user)
+        //console.log(user)
     //assign user ID to blog author
         const blog:TBlog={
             title:req.body.title,
@@ -33,7 +33,8 @@ const createBlog=catchAsync(async(req, res, next)=>{
             isPublished:true
         };
     const result = await BlogService.createBlogIntoDB(blog)
-    sendResponse(res, {success:true,  message:'Blog Created Successfully',statusCode:httpStatus.OK, data:result})
+    const data = await sanitizePostBlogData(result._id.toString(),['-isPublished'])
+    sendResponse(res, {success:true,  message:'Blog Created Successfully',statusCode:httpStatus.OK, data:data})
 })
 
 const updateBlog=catchAsync(async(req, res, next)=>{ //ONLY User can update blog NOT Admin...
@@ -44,7 +45,9 @@ const updateBlog=catchAsync(async(req, res, next)=>{ //ONLY User can update blog
         return
     }
     // else{
-    //     await BlogService.updateBlog()
+        const result=    await BlogService.updateBlog(req.params.id,req.body)
+        const updatedDoc = await sanitizePostBlogData(req.params.id,['_id','title','content','author'])
+        sendResponse(res, {success:false, message:"Blog updated Successfully!", statusCode:httpStatus.OK, data:updatedDoc })
     // }
 })
 

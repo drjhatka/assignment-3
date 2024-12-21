@@ -7,6 +7,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from "../users/user.model";
 import { ObjectId } from "mongoose";
+import { TBlog } from "../blogs/blog.interface";
+import Blog from "../blogs/blog.model";
 
 export type JWTTokenPayload = {
     email:string
@@ -32,8 +34,13 @@ export const createJWTToken = async (jwtPayload:JWTTokenPayload, config:string, 
     return jwt.sign(jwtPayload, config, {expiresIn:expiresIn} )
 }
 
-export const sanitizePostSaveData=async (userId:string,fields:string[])=>{
+export const sanitizePostUserData=async (userId:string,fields:string[])=>{
     //find the user by id
     const user = await User.findById(userId).select(fields)
+    return user;
+}
+export const sanitizePostBlogData=async (userId:string,fields:string[])=>{
+    //find the user by id
+    const user = await Blog.findById(userId).select(fields).populate('author')
     return user;
 }

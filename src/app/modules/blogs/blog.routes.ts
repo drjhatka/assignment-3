@@ -1,14 +1,14 @@
 import  express  from 'express';
 import { BlogController } from './blog.controller';
 import { ValidateRequest } from '../../middleware/validate.request';
-import BlogValidationSchema from './blog.validation';
 import { auth } from '../../middleware/auth.middleware';
+import { BlogValidation } from './blog.validation';
 const router = express.Router()
 
-router.post('/',auth(),ValidateRequest(BlogValidationSchema), BlogController.createBlog )
+router.post('/',auth(),ValidateRequest(BlogValidation.createBlogValidationSchema), BlogController.createBlog )
 router.get('/', BlogController.getAllBlogs )
 router.get('/:id', BlogController.getSingleBlog )
-router.patch('/:id', BlogController.updateBlog )
+router.patch('/:id', ValidateRequest(BlogValidation.updateBlogValidationSchema), BlogController.updateBlog )
 router.delete('/:id', BlogController.deleteBlog )
 
 

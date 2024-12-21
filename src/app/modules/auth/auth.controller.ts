@@ -4,13 +4,13 @@ import { UserService } from "../users/user.service"
 import httpStatus from 'http-status';
 
 import { AuthService } from "./auth.service";
-import { sanitizePostSaveData } from "./auth.utils";
+import { sanitizePostUserData } from "./auth.utils";
 import { TUser } from "../users/user.interface";
 import { ObjectId } from "mongoose";
 const createUser = catchAsync(async (req, res) => {
     //data has come clean... now transfer to service
     const user = await UserService.createUserIntoDB(req.body) 
-    const returnUser = await sanitizePostSaveData(user._id.toString() , ['-password','-status', '-isDeleted','-role','-createdAt','-updatedAt'])
+    const returnUser = await sanitizePostUserData(user._id.toString() , ['-password','-status', '-isDeleted','-role','-createdAt','-updatedAt'])
     //user created. send success response
     sendResponse(res, { success: true, statusCode: httpStatus.CREATED, message: `${user.role} Registered Successfully!`, data: returnUser })
 })
