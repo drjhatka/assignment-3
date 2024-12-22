@@ -14,22 +14,25 @@ export const GlobalErrorHandler = (err: any, req: Request, res: Response, next: 
     }
     else if (err instanceof MongooseError) {
         if (err.name === "CastError") {
-            return res.json({ success: false, message: 'Check Request Parameter', error: err.name })
+            res.json({ success: false, message: 'Check Request Parameter', error: err.name })
+            return
 
         }
-        return res.status(404).json({
+        res.status(404).json({
             success: false,
             message: err.message || 'Something went wrong!',
             error: err
         })
+        return
 
     }
     else {
-        return res.status(404).json({
+        res.status(404).json({
             success: false,
             message: err.message || 'Something Went Wrong',
             error: err
         })
+        return
 
     }
 }
