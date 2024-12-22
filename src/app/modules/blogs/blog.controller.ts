@@ -2,7 +2,7 @@ import { config } from "../../config";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { BlogService } from "./blog.service";
-import httpStatus from 'http-status';
+
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWTTokenPayload, sanitizePostBlogData } from '../auth/auth.utils';
 import { retrieveUserCredentialsFromToken } from "./blog.utils";
@@ -11,22 +11,23 @@ import { TBlog } from "./blog.interface";
 import { TUser } from "../users/user.interface";
 import { ObjectId } from 'mongodb';
 import Blog from "./blog.model";
+import status from "statuses";
 // @ts-ignore: Object is possibly 'null'.
 
 const getAllBlogs = catchAsync(async (req, res, next) => {
    // console.log(req.query)
     const result = await BlogService.getAllBlogs(req.query)
     //const sanitizedBlog = sanitizePostBlogData(result.every(elem=>{}),[''])
-    sendResponse(res,{success:true, statusCode:httpStatus.OK, message:'Blog Fetched successfully',data:result})
+    sendResponse(res,{success:true, statusCode:status('ok'), message:'Blog Fetched successfully',data:result})
 
 })
 const getSingleBlog = catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const blog = await BlogService.getSingleBlog(id)
     if(!blog){
-        sendResponse(res,{success:true, message:"Blog not Found", statusCode:httpStatus.NOT_FOUND, data:{}})
+        sendResponse(res,{success:true, message:"Blog not Found", statusCode:status('not found'), data:{}})
     }
-    sendResponse(res,{success:true, message:"Blog fetched successfully", statusCode:httpStatus.OK, data:blog})
+    sendResponse(res,{success:true, message:"Blog fetched successfully", statusCode:status('ok'), data:blog})
 })
 const createBlog = catchAsync(async (req, res, next) => {
     //retrieve user email and role from jwt header as an array...
@@ -43,20 +44,20 @@ const createBlog = catchAsync(async (req, res, next) => {
     };
     const result = await BlogService.createBlogIntoDB(blog)
     const data = await sanitizePostBlogData(result._id.toString(), ['-isPublished'])
-    sendResponse(res, { success: true, message: 'Blog Created Successfully', statusCode: httpStatus.OK, data: data })
+    sendResponse(res, { success: true, message: 'Blog Created Successfully', statusCode: status('ok'), data: data })
 })
 
 const updateBlog = catchAsync(async (req, res, next) => { //ONLY User can update blog NOT Admin...
     //retrieve user email and role from jwt header as an array
     const decoded = retrieveUserCredentialsFromToken(req.headers.authorization as string, config.jwt_secret as string)
     if (decoded.role === 'admin') {
-        sendResponse(res, { success: false, message: "Admin Cannot Update Blogs", statusCode: httpStatus.UNAUTHORIZED, data: {} })
+        sendResponse(res, { success: false, message: "Admin Cannot Update Blogs", statusCode: status('unauthorized'), data: {} })
         return
     }
     // else{
     const result = await BlogService.updateBlog(req.params.id, req.body)
     const updatedDoc = await sanitizePostBlogData(req.params.id, ['_id', 'title', 'content', 'author'])
-    sendResponse(res, { success: false, message: "Blog updated Successfully!", statusCode: httpStatus.OK, data: updatedDoc })
+    sendResponse(res, { success: false, message: "Blog updated Successfully!", statusCode: status('ok'), data: updatedDoc })
     // }
 })
 
@@ -72,15 +73,15 @@ const deleteBlog = catchAsync(async (req, res, next) => {
         //check if the blog is authored by the current logged in user...
         if (blog.author._id.toString() === user._id.toString()) {
             const result = await BlogService.deleteBlog(blogID)
-            sendResponse(res, { success: true, statusCode: httpStatus.OK, message: "Blog Deleted", data: result })
+            sendResponse(res, { success: true, statusCode: status('ok'), message: "Blog Deleted", data: result })
             return
         }
-        sendResponse(res, { success: false, statusCode: httpStatus.UNAUTHORIZED, message: "User cannot delete other User's blog", data: { blogID } })
+        sendResponse(res, { success: false, statusCode: status('unauthorized'), message: "User cannot delete other User's blog", data: { blogID } })
         return
     }
     else {
         const result = await BlogService.deleteBlog(blogID)
-        sendResponse(res, { success: true, statusCode: httpStatus.OK, message: "Blog Deleted", data: result })
+        sendResponse(res, { success: true, statusCode: status('ok'), message: "Blog Deleted", data: result })
         return
     }
 })

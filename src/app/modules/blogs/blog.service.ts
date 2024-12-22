@@ -2,7 +2,6 @@ import { sendErrorResponse } from "../../utils/sendErrorResponse";
 import { TBlog } from "./blog.interface";
 import Blog from "./blog.model";
 import { ObjectId } from 'mongodb';
-import httpStatus from 'http-status';
 
 const getSingleBlog = async (id:string)=>{
     const result = await Blog.findById(id)

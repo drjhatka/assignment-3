@@ -8,7 +8,7 @@ export type TErrorResponse<T> ={
     stack:string
 }
 export const sendErrorResponse= <T> ( res:Response, data:TErrorResponse<T>)=>{
-    return res.json({
+    res.send({
         success:data.success,
         message:data.message,
         statusCode:data.statusCode,

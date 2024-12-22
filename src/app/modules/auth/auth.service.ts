@@ -1,7 +1,6 @@
 import { AppError } from "../../error/app.error";
 import { TUser } from "../users/user.interface"
 import { User } from "../users/user.model";
-import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import { checkLoginCredentials, createJWTToken } from "./auth.utils";
 import jwt from 'jsonwebtoken';
