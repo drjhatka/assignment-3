@@ -7,9 +7,21 @@ import { BlogService } from "../blogs/blog.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status';
 import { config } from "../../config";
+import { ObjectId } from 'mongoose';
+import { sendErrorResponse } from "../../utils/sendErrorResponse";
 
-const blockUser = catchAsync((req, res) => {
-    // userId = req.params
+const blockUser = catchAsync(async(req, res) => {
+    console.log(req.params)
+    const userId = req.params.userId
+    const decoded = retrieveUserCredentialsFromToken(req.headers.authorization as string, config.jwt_secret as string)
+    console.log(decoded)
+    if(decoded.role =='admin'){
+        const result = await User.findByIdAndUpdate(userId,{$set:{status:'blocked'}})
+        sendResponse(res, { success: false, statusCode: httpStatus.UNAUTHORIZED, message: "User Blocked Successfully", data: result })
+
+        return
+    }
+    sendErrorResponse(res,{success:false, message:'Only Admin can block users!',statusCode:httpStatus.UNAUTHORIZED, error:{}, stack:''})
 })
 
 const deleteBlog = catchAsync(async (req, res, next) => {
