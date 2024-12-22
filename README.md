@@ -4,7 +4,6 @@
 
 Welcome to BlogAPI Lounge. Built with  Express.js  and Mongoose, this API server provides you with fake BlogAPI data for API testing purposes. The server provides Blog data. BlogAPI Lounge provides a number of useful API calls to retrieve and modify data for api testing. Following are the links to the original JSON Data Files.
 
-
 ## API description
 
 ### <p align=center><ins>[Live Server Link](https://assignment-3-sigma-six.vercel.app/api/blogs)</ins></p>
@@ -15,7 +14,7 @@ The following API calls are available from the server
 
 This API call provides You with a collection of blogs   based on query parameter.
 
-#### Retrieve Blogs By search Term  
+#### Retrieve Blogs By search Term
 
 ```http
 
@@ -27,14 +26,14 @@ https://assignment-3-sigma-six.vercel.api/blogs?search=blog
 #### Sort By Fields and use Sort Order with author Filter
 
 ```http
-https://assignment-3-sigma-six.vercel.app/products?searchTerm=Mountain
+https://assignment-3-sigma-six.vercel.app//blogs/?search=blog&sortBy=createdAt&sortOrder=desc&filter=6765cefec8b94824b2c035f5
 
 ```
 
 #### Retrieves a blg based on id
 
 ```http
-https://assignment-3-sigma-six.vercel.app/blogs/
+https://assignment-3-sigma-six.vercel.app/api/blogs/6765cefec8b94824b2c035f5
 ```
 
 ### Get a single blog
@@ -42,7 +41,7 @@ https://assignment-3-sigma-six.vercel.app/blogs/
 This API call requires The ID of the product as parameter and returns a single blog data .
 
 ```http
-https://assignmentvercel-one.vercel.app/api/products/673fec437bd216ac4e1b8085
+https://assignment-3-sigma-six.vercel.app/api/blogs/673fec437bd216ac4e1b8085
 ```
 
 ### Create a blog
@@ -50,23 +49,15 @@ https://assignmentvercel-one.vercel.app/api/products/673fec437bd216ac4e1b8085
 This API call creates a blog in the database. This is a post request so the request document is required . If the document body is empty this API call returns an error message and the created document if the post operation was successful.
 
 ```http
-https://assignmentvercel-one.vercel.app/api/products
+https://assignment-3-sigma-six.vercel.app/api/blog/673fec437bd216ac4e1b8085
 ```
 
 #### POST BODY
 
 ```json
 {
-  
-      "name": "Freshly Created blog",
-      "brand": "TrailBlaze",
-      "price": 1400,
-      "category": "Mountain",
-      "description": "High-performance mountain blog built for extreme trails.",
-      "quantity": 20,
-      "inStock": true,
-      "createdAt": "2024-11-22T02:28:19.541+00:00",
-      "updatedAt": "2024-11-22T02:28:19.541+00:00"
+      "title": "Freshly Created blog",
+      "content":"Freshly Created Content"
 
 }
 
@@ -77,14 +68,15 @@ https://assignmentvercel-one.vercel.app/api/products
 This API call updates the data in the specified product. It takes the modified document or the updated document and modifies the field values of the document in the DB. If the prescribed document format is not provided the API returns an error message
 
 ```http
-https://assignmentvercel-one.vercel.app/api/products/673fec437bd216ac4e1b8085
+https://assignment-3-sigma-six.vercel.app/api/blogs/673fec437bd216ac4e1b8085
 ```
 
 #### Request Body
 
 ```json
 {
-    "name":"Changed blog Again"
+    "title":"Changed blog Again",
+    "content":"Changed Content Again"
 }
 ```
 
@@ -93,10 +85,9 @@ https://assignmentvercel-one.vercel.app/api/products/673fec437bd216ac4e1b8085
 This API call deletes a specified product in the database. It returns a Delete confirmation in the form of success and error message.
 
 ```http
-https://assignmentvercel-one.vercel.app/api/products/674011efe649fa028c41ff44
+https://assignment-3-sigma-six.vercel.app/api/blogs/674011efe649fa028c41ff44
 
 ```
-
 
 ## Predefined POSTMAN Requests for your convenience
 
