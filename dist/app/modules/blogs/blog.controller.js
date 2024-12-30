@@ -24,10 +24,14 @@ const blog_model_1 = __importDefault(require("./blog.model"));
 const statuses_1 = __importDefault(require("statuses"));
 // @ts-ignore: Object is possibly 'null'.
 const getAllBlogs = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // console.log(req.query)
+    console.log(req.user);
     const result = yield blog_service_1.BlogService.getAllBlogs(req.query);
     //const sanitizedBlog = sanitizePostBlogData(result.every(elem=>{}),[''])
-    (0, sendResponse_1.sendResponse)(res, { success: true, statusCode: (0, statuses_1.default)('ok'), message: 'Blog Fetched successfully', data: result });
+    if (!result.length) {
+        (0, sendResponse_1.sendResponse)(res, { success: false, statusCode: (0, statuses_1.default)('not found'), message: 'Nothing Found', data: result });
+        return;
+    }
+    (0, sendResponse_1.sendResponse)(res, { success: true, statusCode: (0, statuses_1.default)('ok'), message: 'Blog(s) Fetched successfully', data: result });
 }));
 const getSingleBlog = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
@@ -39,10 +43,9 @@ const getSingleBlog = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
 }));
 const createBlog = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //retrieve user email and role from jwt header as an array...
-    const decoded = (0, blog_utils_1.retrieveUserCredentialsFromToken)(req.headers.authorization, config_1.config.jwt_secret);
+    const decoded = (0, blog_utils_1.retrieveUserCredentialsFromToken)(req.headers.authorization.split(' ')[1], config_1.config.jwt_secret);
     //find user in the database with the email provided....
     const user = yield user_model_1.User.findOne({ email: decoded.email });
-    //console.log(user)
     //assign user ID to blog author
     const blog = {
         title: req.body.title,
@@ -56,27 +59,46 @@ const createBlog = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
 }));
 const updateBlog = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //retrieve user email and role from jwt header as an array
-    const decoded = (0, blog_utils_1.retrieveUserCredentialsFromToken)(req.headers.authorization, config_1.config.jwt_secret);
-    if (decoded.role === 'admin') {
+    //const decoded = retrieveUserCredentialsFromToken(req.headers.authorization.split(' ')[1] as string, config.jwt_secret as string)
+    if (req.user.role === 'admin') {
         (0, sendResponse_1.sendResponse)(res, { success: false, message: "Admin Cannot Update Blogs", statusCode: (0, statuses_1.default)('unauthorized'), data: {} });
         return;
     }
     // else{
+    //check if the user id is same 
+    const blog = yield blog_model_1.default.findOne({ _id: req.params.id });
+    const user = yield user_model_1.User.findById(blog.author);
+    console.log('BU ', user.email, req.user.email);
+    if (user.email !== req.user.email) {
+        (0, sendResponse_1.sendResponse)(res, { success: false, message: "You can't update other people's blog", statusCode: (0, statuses_1.default)('unauthorized'), data: {} });
+        return;
+    }
     const result = yield blog_service_1.BlogService.updateBlog(req.params.id, req.body);
+    //console.log(result)
+    if (!result) {
+        res.send({
+            success: false,
+            statusCode: (0, statuses_1.default)('bad request'),
+            message: 'Cannot find Blog by the ID supplied',
+        });
+    }
+    // console.log('result-',result)
     const updatedDoc = yield (0, auth_utils_1.sanitizePostBlogData)(req.params.id, ['_id', 'title', 'content', 'author']);
-    (0, sendResponse_1.sendResponse)(res, { success: false, message: "Blog updated Successfully!", statusCode: (0, statuses_1.default)('ok'), data: updatedDoc });
+    console.log('updatedDoc', updatedDoc);
+    (0, sendResponse_1.sendResponse)(res, { success: true, message: "Blog updated Successfully!", statusCode: (0, statuses_1.default)('ok'), data: updatedDoc });
     // }
 }));
 const deleteBlog = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //admin can delete any blog but user can delete only their blog...
-    const decoded = (0, blog_utils_1.retrieveUserCredentialsFromToken)(req.headers.authorization, config_1.config.jwt_secret);
+    const decoded = (0, blog_utils_1.retrieveUserCredentialsFromToken)(req.headers.authorization.split(' ')[1], config_1.config.jwt_secret);
     //find blog and match user
     const blogID = req.params.id;
     const blog = yield blog_model_1.default.findById(blogID);
     const user = yield user_model_1.User.findById(blog.author);
     if (decoded.role === 'user') {
         //check if the blog is authored by the current logged in user...
-        if (blog.author._id.toString() === user._id.toString()) {
+        console.log(blog.author._id.toString(), user._id.toString());
+        if (decoded.email === user.email) {
             const result = yield blog_service_1.BlogService.deleteBlog(blogID);
             (0, sendResponse_1.sendResponse)(res, { success: true, statusCode: (0, statuses_1.default)('ok'), message: "Blog Deleted", data: result });
             return;

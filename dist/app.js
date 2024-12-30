@@ -8,8 +8,10 @@ const server_config_1 = require("./app/server/server.config");
 const router_1 = __importDefault(require("./app/routes/router"));
 const globalErrorHandler_1 = require("./app/error/globalErrorHandler");
 const notFoundRoute_1 = require("./app/middleware/notFoundRoute");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)(); //create express app
-(0, server_config_1.configureServer)(app); //configure express app
+(0, server_config_1.configureServer)(app);
+app.use((0, cookie_parser_1.default)()); //configure express app
 app.use('/api', router_1.default); //use the router array
 app.use(globalErrorHandler_1.GlobalErrorHandler);
 app.use(notFoundRoute_1.NotFoundRoute);

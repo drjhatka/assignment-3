@@ -29,6 +29,7 @@ const createUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
 }));
 const loginUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
+    console.log(email);
     if (!email || !password) {
         (0, sendResponse_1.sendResponse)(res, { success: false, statusCode: (0, statuses_1.default)('bad request'), message: "email and password required", data: {} });
         return;
@@ -38,9 +39,25 @@ const loginUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, v
     //check if the user exists, password match, status is active and user is not deleted
     (0, auth_utils_1.checkLoginCredentials)(res, user, req.body);
     const result = yield auth_service_1.AuthService.loginUser(req.body);
-    (0, sendResponse_1.sendResponse)(res, { success: true, statusCode: (0, statuses_1.default)('ok'), message: "Login Success", data: { token: result } });
+    const { accessToken, refreshToken } = result;
+    res.cookie('refreshToken', refreshToken, {
+        secure: true,
+        httpOnly: true,
+    });
+    (0, sendResponse_1.sendResponse)(res, { success: true, statusCode: (0, statuses_1.default)('ok'), message: "Login Success", data: { token: accessToken } });
+}));
+const refreshToken = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { refreshToken } = req.cookies;
+    console.log('cookie  ', req.cookies);
+    console.log("RT ", refreshToken);
+    console.log('user ', req.user);
+    const user = yield user_model_1.User.findOne({ email: req.user.email }).select(['password', 'email', 'role', 'status', 'isDeleted']);
+    (0, auth_utils_1.checkRefreshTokenCredentials)(user);
+    //const result = await AuthService.refreshToken(refreshToken)
+    //res.send({validate:result})
 }));
 exports.AuthController = {
     createUser,
-    loginUser
+    loginUser,
+    refreshToken
 };

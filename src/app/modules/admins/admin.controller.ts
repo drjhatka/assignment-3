@@ -14,11 +14,11 @@ import status from "statuses";
 const blockUser = catchAsync(async(req, res) => {
     console.log(req.params)
     const userId = req.params.userId
-    const decoded = retrieveUserCredentialsFromToken(req.headers.authorization as string, config.jwt_secret as string)
+    const decoded = retrieveUserCredentialsFromToken(req.headers.authorization.split(' ')[1] as string, config.jwt_secret as string)
     console.log(decoded)
     if(decoded.role =='admin'){
         const result = await User.findByIdAndUpdate(userId,{$set:{status:'blocked'}})
-        sendResponse(res, { success: false, statusCode: status('ok'), message: "User Blocked Successfully", data: result })
+        sendResponse(res, { success: true, statusCode: status('ok'), message: "User Blocked Successfully", data: result })
 
         return
     }
@@ -27,7 +27,7 @@ const blockUser = catchAsync(async(req, res) => {
 
 const deleteBlog = catchAsync(async (req, res, next) => {
     //admin can delete any blog but user can delete only their blog...
-    const decoded = retrieveUserCredentialsFromToken(req.headers.authorization as string, config.jwt_secret as string)
+    const decoded = retrieveUserCredentialsFromToken(req.headers.authorization.split(' ')[1] as string, config.jwt_secret as string)
     //find blog and match user
     const blogID = req.params.id;
     const blog = await Blog.findById(blogID)

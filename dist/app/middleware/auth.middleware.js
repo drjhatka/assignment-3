@@ -18,18 +18,23 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const app_error_1 = require("../error/app.error");
 const statuses_1 = __importDefault(require("statuses"));
-const auth = () => {
+const auth = (...requiredRoles) => {
     return (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         //check if the token is sent from the client
-        const accessToken = req.headers.authorization;
-        if (!accessToken) {
+        if (!req.headers.authorization) {
             throw new app_error_1.AppError((0, statuses_1.default)('unauthorized'), "You are not authorized");
         }
+        const accessToken = req.headers.authorization.split(' ')[1];
         //retrieve auth token from the request header and verify
-        const decodedToken = jsonwebtoken_1.default.verify(req.headers.authorization, config_1.config.jwt_secret, (err, decoded) => {
+        const decodedToken = jsonwebtoken_1.default.verify(accessToken, config_1.config.jwt_secret, (err, decoded) => {
             if (err) {
                 throw new app_error_1.AppError((0, statuses_1.default)('unauthorized'), 'Invalid Token');
             }
+            const role = decoded.role;
+            if (requiredRoles && !requiredRoles.includes(role)) {
+                throw new app_error_1.AppError((0, statuses_1.default)('unauthorized'), 'Unauthorized', '');
+            }
+            req.user = decoded;
             //all clear... proceed to next phase
             next();
         });

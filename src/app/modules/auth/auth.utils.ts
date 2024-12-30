@@ -8,7 +8,7 @@ import Blog from "../blogs/blog.model";
 import { sendResponse } from "../../utils/sendResponse";
 import { Response } from "express";
 import { sendErrorResponse } from "../../utils/sendErrorResponse";
-import { TLoginUser } from "./auth.login";
+import { TLoginUser, TRefreshUser } from "./auth.login";
 
 export type JWTTokenPayload = {
     email: string
@@ -18,17 +18,17 @@ export type JWTTokenPayload = {
 export const checkLoginCredentials = async (res: Response, user: TUser, payload: TLoginUser) => {
     //if user doesn't exist
     if (!user) {
-        sendErrorResponse(res, { success: false, statusCode: status('unauthorized'), message: "User doesn't exist", error: {}, stack: '' })
+        sendErrorResponse(res, { success: false, statusCode: status('unauthorized'), message: "Invalid Credentials", error: {}, stack: '' })
         return
     }
-    
+
     //if the user is deleted
     if (user.isDeleted) {
-       sendErrorResponse(res, { success: false, statusCode: status('unauthorized'), message: "User is Deleted!!!", error: {}, stack: '' })
-       
+        sendErrorResponse(res, { success: false, statusCode: status('unauthorized'), message: "User is Deleted!!!", error: {}, stack: '' })
+
     }
     //if the user is blocked
-    console.log(user)
+    
     if (user.status === 'blocked') {
         sendErrorResponse(res, { success: false, statusCode: status('unauthorized'), message: "User is Blocked", error: {}, stack: '' })
         return
@@ -42,7 +42,27 @@ export const checkLoginCredentials = async (res: Response, user: TUser, payload:
     }
 }
 
-export const createJWTToken = async (jwtPayload: JWTTokenPayload, config: string, expiresIn: string) => {
+export const checkRefreshTokenCredentials = async ( user: TUser) => {
+    //if user doesn't exist
+    if (!user) {
+        return 'No User';
+    }
+
+    //if the user is deleted
+    if (user.isDeleted) {
+            return 'Deleted';
+    }
+    //if the user is blocked
+    console.log(user)
+    if (user.status === 'blocked') {
+        return 'Blocked';
+    }
+    return 'valid'
+}
+export const createJWTAccessToken = async (jwtPayload: JWTTokenPayload, config: string, expiresIn: string) => {
+    return jwt.sign(jwtPayload, config, { expiresIn: expiresIn })
+}
+export const createJWTRefreshToken = async (jwtPayload: JWTTokenPayload, config: string, expiresIn: string) => {
     return jwt.sign(jwtPayload, config, { expiresIn: expiresIn })
 }
 

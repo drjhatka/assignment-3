@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ValidateRequest = void 0;
+exports.ValidateRefreshToken = exports.ValidateRequest = void 0;
 const ValidateRequest = (schema) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
+            //console.log(req.cookies)
             const zodParsedData = yield schema.parseAsync(req.body);
             next();
         }
@@ -22,3 +23,16 @@ const ValidateRequest = (schema) => {
     });
 };
 exports.ValidateRequest = ValidateRequest;
+const ValidateRefreshToken = (schema) => {
+    return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            console.log("RT ", req.cookies.refreshToken);
+            const zodParsedData = yield schema.parseAsync(req.cookies);
+            next();
+        }
+        catch (err) {
+            next(err);
+        }
+    });
+};
+exports.ValidateRefreshToken = ValidateRefreshToken;
